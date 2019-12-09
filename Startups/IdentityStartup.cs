@@ -50,7 +50,7 @@ namespace ProjectStructure.Startups
                 options.Password.RequireLowercase = Boolean.TryParse(config[AuthConstants.RequireLowercase], out bool requireLowercaseBool);
                 options.Password.RequiredUniqueChars = Int32.TryParse(config[AuthConstants.RequiredUniqueChars], out int requiredUniqueChars) ? requiredUniqueChars : 0;
             });
-            var key = Encoding.UTF8.GetBytes("vfvfzytnbkmne.".ToString());
+            var key = Encoding.UTF8.GetBytes("vfvrbylhzybr18021".ToString());
             services.AddAuthentication(options =>
             {
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;

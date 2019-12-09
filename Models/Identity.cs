@@ -29,7 +29,7 @@ namespace ProjectStructure.Models
         public List<Post> Posts { get; set; }
         public List<Like> Likes { get; set; }
         public List<Comment> Comments { get; set; }
-        public string AvatartImageBase64 { get; set; }
+        public string AvatarImageBase64 { get; set; }
 
         #region IDeletable
 

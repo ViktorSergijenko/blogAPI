@@ -46,6 +46,7 @@ namespace ProjectStructure.Authorization
 
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AtleastModerator requirement)
         {
+            var a = context.User.Identity.Name;
             if (!context.User.IsInRole(AuthConstants.Role_GlobalAdmin)
                 && !context.User.IsInRole(AuthConstants.Role_Moderator)
             )

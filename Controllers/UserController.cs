@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
@@ -37,22 +38,18 @@ namespace ProjectStructure.Controllers
         [HttpPost]
         [Route("Register")]
         //POST : /api/ApplicationUser/Register
-        public async Task<Object> PostApplicationUser(UserRegisterDTO model)
-        {
+        public async Task<ActionResult<User>> PostApplicationUser(UserRegisterDTO model)
+         {
 
-            model.RoleName = "Admin";
-            var applicationUser = new User()
-            {
-                UserName = model.NickName,
-                Email = model.Email,
-                FullName = model.FullName
-            };
+            var applicationUser = new User();
+            applicationUser.RoleName = "RegularUser";
+            Mapper.Map(model, applicationUser);
 
             try
             {
                 var result = await _userManager.CreateAsync(applicationUser, model.Password);
-                await _userManager.AddToRoleAsync(applicationUser, model.RoleName);
-                return Ok(result);
+                await _userManager.AddToRoleAsync(applicationUser, applicationUser.RoleName);
+                return Ok(model);
             }
             catch (Exception ex)
             {
@@ -66,7 +63,7 @@ namespace ProjectStructure.Controllers
         //POST : /api/ApplicationUser/Login
         public async Task<IActionResult> Login(LoginContext model)
         {
-            var user = await _userManager.FindByEmailAsync(model.Email);
+            var user = await _userManager.FindByEmailAsync(model.Email) ?? await _userManager.FindByNameAsync(model.UserName);
             if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
             {
                 //Get role assigned to the user
@@ -94,11 +91,10 @@ namespace ProjectStructure.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [Route("GetProfile")]
         public UserProfileVM GetUserClaims()
         {
-            Guid companyId = new Guid();
             var identityClaims = (ClaimsIdentity)User.Identity;
             IEnumerable<Claim> claims = identityClaims.Claims;
             UserProfileVM model = new UserProfileVM()
@@ -107,9 +103,6 @@ namespace ProjectStructure.Controllers
                 Id = Guid.Parse(identityClaims.FindFirst("UserID").Value),
                 RoleName = identityClaims.FindFirst(ClaimTypes.Role).Value,
             };
-            Guid.TryParse(identityClaims.FindFirst("UserID").Value, out companyId);
-            model.CompanyId = companyId;
-
             return model;
         }
 
@@ -129,7 +122,7 @@ namespace ProjectStructure.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = AuthConstants.GlobalAdminPolicy)]
+        [Authorize(Policy = AuthConstants.AtLeastModerator)]
         [Route("ForAdmin")]
         public string GetForAdmin()
         {
@@ -158,7 +151,7 @@ namespace ProjectStructure.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Company Director")]
+        [Authorize(Roles = AuthConstants.AuthorizedPolicy)]
         [Route("ForDirector")]
         public string GetCustomer()
         {
@@ -166,7 +159,7 @@ namespace ProjectStructure.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Global Admin,Company Director")]
+        [Authorize(Roles = "Global Admin, Moderator")]
         [Route("ForAdminOrCustomer")]
         public string GetForAdminOrCustomer()
         {
