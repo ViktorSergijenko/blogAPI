@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ProjectStructure.Constants;
 using ProjectStructure.DTO;
@@ -31,9 +32,9 @@ namespace ProjectStructure.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Like>>> Get()
         {
-            return Ok(await _likeService.Get());
+            return Ok(await _likeService.Get(null,true, x => x.Include(y => y.User)));
         }
-
+        
         [HttpGet("{id}")]
         [Authorize(Policy = AuthConstants.AtLeastRegularUser)]
         public async Task<ActionResult<Like>> GetById(Guid id)

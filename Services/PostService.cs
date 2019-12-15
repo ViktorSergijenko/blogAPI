@@ -12,5 +12,10 @@ namespace ProjectStructure.Services
         public PostService(IServiceProvider services) : base(services)
         {
         }
+
+        public override async Task IsNewEntity(PostDTO data, Post entityToSave)
+        {
+            entityToSave.PostedAt = DateTime.Now;
+        }
     }
 }

@@ -83,7 +83,7 @@ namespace ProjectStructure.Services
 
             var entityToSave = isNewEntity
                 ? new TEntity()
-                : await GetById(data.Id, false, include)
+                : await GetById(data.Id ?? Guid.Empty, false, include)
             ;
 
             ProjectExceptions.ThrowNotFoundIfNull(entityToSave);

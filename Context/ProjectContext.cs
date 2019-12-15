@@ -25,18 +25,20 @@ namespace ProjectStructure.Context
                 .HasMany(x => x.Comments)
                 .WithOne(x => x.Post)
                 .HasForeignKey(x => x.PostId)
-                ;
+                .OnDelete(DeleteBehavior.Cascade);
+            ;
             mb.Entity<Post>()
                 .HasMany(x => x.Likes)
                 .WithOne(x => x.Post)
                 .HasForeignKey(x => x.PostId)
-                ;
+                .OnDelete(DeleteBehavior.Cascade);
+            ;
             mb.Entity<Post>()
                 .HasOne(x => x.User)
                 .WithMany(x => x.Posts)
                 .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.Restrict)
-                ;
+            ;
             #endregion Post model builder
 
             #region User model builder

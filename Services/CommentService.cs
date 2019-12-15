@@ -12,5 +12,10 @@ namespace ProjectStructure.Services
         public CommentService(IServiceProvider services) : base(services)
         {
         }
+
+        public override async Task IsNewEntity(CommentDTO CommentDTO, Comment entityToSave)
+        {
+            entityToSave.CommentedAt = DateTime.Now;
+        }
     }
 }
